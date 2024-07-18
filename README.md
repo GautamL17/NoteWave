@@ -1,6 +1,6 @@
 # NoteWave
 
-NoteWave is a comprehensive note-storing application that allows users to store various types of data, such as PDFs, images, and texts, in a single note. The app supports CRUD operations, enabling users to create, read, update, and delete notes. Users can also manage their profile details, such as changing their name and email.
+NoteWave is a comprehensive notes sharing application that allows users to store various types of data, such as PDFs, images, and texts, in a single note and can share with other users by choosing the visibility to PUBLIC. The app supports CRUD operations, enabling users to create, read, update, and delete notes. Users can also manage their profile details, such as changing their name and email.
 
 ## Table of Contents
 
