@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { NavLink, Link } from 'react-router-dom';
-import { fetchNotes, deleteNote } from '../redux/features/notesSlice';
+import { fetchNotes, deleteNote, setSearchQuery } from '../redux/features/notesSlice';
 import { setUser } from '../redux/features/userSlice';
 import MainScreen from './MainScreen';
 import axios from 'axios';
@@ -15,6 +15,7 @@ const Notes = () => {
     const [activeNoteId, setActiveNoteId] = useState(null);
     const [showLoadingMessage, setShowLoadingMessage] = useState(true);
     const [pdfPaths, setPdfPaths] = useState({});
+    const [imagePaths, setImagePaths] = useState({});
 
     const fetchPdfPaths = async (pdfIds) => {
         const paths = {};
@@ -34,11 +35,33 @@ const Notes = () => {
         }
     };
 
+    const fetchImagePaths = async (imageIds) => {
+        const paths = {};
+        try {
+            const responses = await Promise.all(imageIds.map((imageId) => axios.get(`/api/image/metadata/${imageId}`)));
+            responses.forEach((response, index) => {
+                const imageId = imageIds[index];
+                paths[imageId] = response.data.imageName; // Assuming response has imageName
+            });
+            setImagePaths(paths);
+        } catch (error) {
+            console.error('Error fetching image paths:', error);
+            imageIds.forEach((imageId) => {
+                paths[imageId] = null; // Set null for failed requests
+            });
+            setImagePaths(paths);
+        }
+    };
+
     useEffect(() => {
         if (notes.length > 0) {
             const pdfIds = notes.flatMap((note) => note.pdfs); // Extract all pdf IDs from notes
             if (pdfIds.length > 0) {
                 fetchPdfPaths(pdfIds);
+            }
+            const imageIds = notes.flatMap((note) => note.images); // Extract all image IDs from notes
+            if (imageIds.length > 0) {
+                fetchImagePaths(imageIds);
             }
         }
     }, [notes]);
@@ -71,23 +94,23 @@ const Notes = () => {
 
     const filteredNotes = notes.filter(
         (note) =>
-            note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            note.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            note.category.toLowerCase().includes(searchQuery.toLowerCase())
+            note.title.toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
+            note.content.toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
+            note.categories.some(category => category.toString().toLowerCase().includes(searchQuery.toLowerCase())) // Fixed categories filtering
     );
 
-    const getOriginalPdfName = (timestampedName) => {
+    const getOriginalFileName = (timestampedName) => {
         return timestampedName.substring(timestampedName.indexOf('-') + 1);
     };
 
     return (
         <>
             {showLoadingMessage ? (
-                <div className="text-5xl text-white font-bold flex justify-center items-center mt-[15%]">
+                    <div className="text-5xl text-white font-bold flex justify-center items-center mt-[15%]">
                     <div role="status">
                         <svg
                             aria-hidden="true"
-                            className="w-10 h-10 text-blue-200 animate-spin dark:text-gray-600 fill-purple-600"
+                            className="w-10 h-10 text-blue-200 animate-spin dark:text-zinc-900 fill-indigo-500"
                             viewBox="0 0 100 101"
                             fill="none"
                             xmlns="http://www.w3.org/2000/svg"
@@ -101,39 +124,45 @@ const Notes = () => {
                                 fill="currentFill"
                             />
                         </svg>
-                        <span className="sr-only">Loading...</span>
                     </div>
                 </div>
             ) : (
                 userInfo ? (
                     <MainScreen title={`Welcome back ${userInfo.name}`}>
                         <>
-                            <button className="mb-6">
-                                <NavLink
-                                    to="/createnote"
-                                    className=" border rounded-md hover:bg-white bg-zinc-100 font-semibold text-zinc-950 p-2 w-[90px] hover:shadow-[0_20px_50px_#7e26d193]"
-                                >
-                                    Create a note
-                                </NavLink>
-                            </button>
+                            <div className="flex justify-between mb-10">
+                                <button className="">
+                                    <NavLink
+                                        to="/createnote"
+                                        className="border rounded-md hover:bg-indigo-200 bg-indigo-300 font-semibold text-zinc-950 p-2 w-[90px] "
+                                    >
+                                        Create a note
+                                    </NavLink>
+                                </button>
+                                <input
+                                    className='border-2 border-indigo-400 rounded-md px-2'
+                                    placeholder='Search Notes'
+                                    onChange={(e) => dispatch(setSearchQuery(e.target.value))}
+                                />
+                            </div>
                             {filteredNotes.map((note) => (
-                                <div key={note._id} className="rounded-md my-4 g-white border border-opacity-50 border-[#C6C5FF]">
+                                <div key={note._id} className="text-black rounded-md my-4 border-blue-100 border-2 bg-opacity-50">
                                     <div
-                                        className={`flex justify-between items-center border border-[#C6C5FF] border-opacity-50 rounded-md px-3 py-4 text-zinc-100 cursor-pointer hover:bg-[#D9D9D9] hover:bg-opacity-20 `}
+                                        className={`flex justify-between items-center rounded-md px-3 py-4  cursor-pointer hover:bg--400 hover:bg-opacity-20 `}
                                         onClick={() => toggleAccordion(note._id)}
                                     >
-                                        <button className="font-medium text-xl hs-accordion-toggle">{note.title}</button>
+                                        <button className="font-medium text-black text-xl hs-accordion-toggle">{note.title}</button>
                                         <div className="list-none flex gap-5">
                                             <li>
                                                 <button
-                                                    className="bg-[#F7A2A2] hover:bg-red-300 rounde text-zinc-950 px-2 py-1 flex justify-center rounded-md items-center w-[90px]"
+                                                    className="bg-red-400 hover:bg-red-500 rounde text-zinc-950 px-2 py-1 flex justify-center rounded-md items-center w-[90px]"
                                                     onClick={() => deleteHandler(note._id)}
                                                 >
                                                     Delete
                                                 </button>
                                             </li>
                                             <li>
-                                                <Link to={`/editnote/${note._id}`} className="flex justify-center items-center bg-[#C6C5FF] hover:bg-violet-200 rounded-md text-zinc-950 px-2 py-1 w-[90px]">
+                                                <Link to={`/editnote/${note._id}`} className="flex justify-center items-center bg-indigo-300 hover:bg-indigo-400 rounded-md text-zinc-950 px-2 py-1 w-[90px]">
                                                     <button>Edit</button>
                                                 </Link>
                                             </li>
@@ -144,28 +173,36 @@ const Notes = () => {
                                         aria-labelledby={`hs-heading-${note._id}`}
                                         className={`mb-2 px-2 py-1 hs-accordion-content w-full overflow-hidden transition-[height] duration-300 ${activeNoteId === note._id ? 'block' : 'hidden'}`}
                                     >
-                                        <div className="mt-1 mb-5">
-                                            <span className="text-sm pb-[2px] bg-green-300 text-[#0D111D] rounded-md px-2 mb-20">{note.category}</span>
+                                        <div className="mb-5">
+                                            {
+                                                note.categories.filter(category => category !== 'undefined' ).map((category, index) => (
+                                                    <span key={index} className="text-sm pb-[2px] bg-green-300 text-[#0D111D] rounded-md px-2 mb-2 inline-block mr-2">
+                                                        {category}
+                                                    </span>
+                                                ))
+                                            }
                                         </div>
-                                        <p>{note.content}</p>
+                                        <div>
+                                            <h2 className="font-semibold text-lg">Description</h2>
+                                            <p>{note.content}</p>
+                                        </div>
                                         {note.pdfs && note.pdfs.length > 0 && (
                                             <div className="mt-4">
-                                                <h3 className="text-lg font-semibold mb-2">PDFs:</h3>
+                                                <h3 className="text-lg font-semibold">PDFs:</h3>
                                                 <ul>
                                                     {note.pdfs.map((pdfId) => (
                                                         <li key={pdfId}>
-                                                            {console.log(pdfId)}
-                                                            {console.log(pdfPaths[pdfId[0]])}
+                                                            {/* {console.log(pdfId)} */}
+                                                            {/* {console.log(pdfPaths[pdfId[0]])} */}
                                                             {pdfId ? (
                                                                 <>
-                                                                    <span className="px-3 py-1 bg-slate-50 bg-opacity-25 rounded-md">
+                                                                    <span className="px-3 py-1 bg-green-300 bg- rounded-md">
                                                                         <a
                                                                             href={`http://localhost:3000/api/pdf/${pdfId}`}
                                                                             target="_blank"
                                                                             rel="noopener noreferrer"
-
                                                                         >
-                                                                            {getOriginalPdfName(pdfPaths[pdfId])}
+                                                                            {getOriginalFileName(pdfPaths[pdfId])}
                                                                         </a>
                                                                     </span>
                                                                 </>
@@ -178,17 +215,36 @@ const Notes = () => {
                                             </div>
                                         )}
 
+                                        {note.images.map((imageId) => (
+                                            <div key={imageId}>
+                                                {imagePaths[imageId] ? (
+                                                    <div className='mt-4'>
+                                                        <h1 className='mb-1 text-lg font-semibold'>Images:</h1>
+                                                        <a
+                                                            className='px-3 py-1 bg-green-300 rounded-md'
+                                                            href={`http://localhost:3000/api/image/${imageId}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                        >
+                                                            {getOriginalFileName(imagePaths[imageId])}
+                                                        </a>
+                                                    </div>
+                                                ) : (
+                                                    <span>Loading...</span>
+                                                )}
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
                             ))}
                         </>
                     </MainScreen>
                 ) : (
-                    <div className="text-center text-white text-2xl mt-40">
+                    <div className="text-center text-black font-semibold text-2xl mt-40">
                         Please signup/login to see your notes.
                         <div className="flex flex-wrap justify-between list-none sm:w-[50%] lg:w-[30%] md:w-[50%] mx-auto mt-10">
-                            <NavLink className='py-1 lg:px-5 md:px-3 sm:px-2  bg-blue-50  hover:bg-blue-100  text-[#0D111D] rounded-md text-base' to='/login'>Login</NavLink>
-                            <NavLink className='py-1 lg:px-5 md:px-3 sm:px-2  border-2 border-blue-50 text-zinc-100 hover:text-[#010219] hover:bg-opacity-100 hover:bg-blue-50 rounded-md text-base ' to='/signup'>Sign Up</NavLink>
+                            <NavLink className='py-1 lg:px-5 md:px-3 sm:px-2  bg-zinc-900  hover:bg-zinc-800  text-yellow-50 rounded-md text-base' to='/login'>Login</NavLink>
+                            <NavLink className='py-1 lg:px-5 md:px-3 sm:px-2  border-2 border-zinc-800 hover:text-yellow-50 text-black hover:bg-opacity-100 hover:bg-black rounded-md text-base ' to='/signup'>Sign Up</NavLink>
                         </div>
                     </div>
                 )
@@ -196,4 +252,5 @@ const Notes = () => {
         </>
     );
 }
-export default Notes    
+
+export default Notes;

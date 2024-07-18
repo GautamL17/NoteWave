@@ -57,6 +57,7 @@ const userSlice = createSlice({
     userToken: localStorage.getItem('token') || null,
     loading: false,
     error: null,
+    searchQuery: '',
   },
   reducers: {
     logout(state) {
@@ -69,6 +70,9 @@ const userSlice = createSlice({
       state.userInfo = action.payload;
       state.userToken = action.payload.token;
     },
+    setSearchQuery(state, action) {
+      state.searchQuery = action.payload
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -115,5 +119,5 @@ const userSlice = createSlice({
   }
 });
 
-export const { logout, setUser } = userSlice.actions;
+export const { logout, setUser, setSearchQuery } = userSlice.actions;
 export default userSlice.reducer;

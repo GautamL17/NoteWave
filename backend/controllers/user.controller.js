@@ -88,46 +88,57 @@ const HandleLoginUser = async (req, res) => {
 };
 
 
-  const HandleEditProfile = async (req, res) => {
+const HandleEditProfile = async (req, res) => {
     try {
-      const { id } = req.params; // Use destructuring to directly get id from params
-      const { name, email } = req.body;
-  
-      // Input validation
-      if (!name || !email) {
-        return res.status(400).json({
-          status: 'error occurred',
-          message: 'Name and email are required',
-        });
-      }
-  
-      const user = await User.findById(id);
-  
-      if (!user) {
-        return res.status(404).json({
-          status: 'error occurred at handleEditProfile',
-          message: 'User not found',
-        });
-      }
-  
-      user.name = name;
-      user.email = email;
-      await user.save();
-  
-      return res.status(200).json(user); // Return the updated user
+        const { id } = req.params; // Use destructuring to directly get id from params
+        const { name, email } = req.body;
+
+        // Input validation
+        if (!name || !email) {
+            return res.status(400).json({
+                status: 'error occurred',
+                message: 'Name and email are required',
+            });
+        }
+
+        const user = await User.findById(id);
+
+        if (!user) {
+            return res.status(404).json({
+                status: 'error occurred at handleEditProfile',
+                message: 'User not found',
+            });
+        }
+
+        user.name = name;
+        user.email = email;
+        await user.save();
+
+        return res.status(200).json(user); // Return the updated user
     } catch (error) {
-      console.error('Error occurred at edit profile:', error);
-      return res.status(500).json({
-        status: 'error occurred',
-        message: 'Server error',
-      });
+        console.error('Error occurred at edit profile:', error);
+        return res.status(500).json({
+            status: 'error occurred',
+            message: 'Server error',
+        });
     }
-  };
-  
+};
+
+const HandleUserProfiles = async (req, res) => {
+    try {
+        const users = await User.find({})
+        res.send( users )
+    }
+    catch (error) {
+        console.log(error)
+    }
+}
+
 
 module.exports = {
     HandleSignupUser,
     HandleLoginUser,
     HandleEditProfile,
+    HandleUserProfiles,
     test,
 };

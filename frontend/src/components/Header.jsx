@@ -15,41 +15,41 @@ const Header = () => {
 
      return (
         <>
-            <nav className='flex justify-between mt-3 w-[70%] text-white mx-auto py-2 sticky'>
-                <div className="hover:text-yellow-100 font-semibold text-xl flex justify-center items-center gap-2">
+            <div className='flex  items-center justify-between py-3 w-[70%] text-black  mx-auto'>
+                <div className="font-semibold text-xl flex justify-center items-center gap-2">
                  <NavLink to='/'>
                  <div className='flex justify-center items-center gap-2'>
-                 <box-icon name='square-rounded' color='#d946ef' ></box-icon> <span className='bg-gradient-to-r from-indigo-500 via-fuchsia-500 to-pink-500 inline-block text-transparent bg-clip-text' >Note Wave</span>
+                 <span className=' animate-rotate w-5 h-5 bg-gradient-to-br from-pink-300 via-fuchsia-300 to-indigo-300 rounded-full' ></span>
+                 <span className='text-black' >Notewave</span>
                  </div>
                  </NavLink>
                 </div>
                 <div className="flex list-none gap-3 justify-center items-center ">
-                    <li className='hover:shadow-[0_20px_50px_#7e26d193] border-2 text-xl   px-3 border-transparent hover:bg-fuchsia-50 hover:bg-opacity-5  hover:rounded-md'  > <NavLink to='/notes' >Notes</NavLink> </li>
-                    <li>
-                        <input type="text" placeholder='Search' onChange={handleSearchChange} className=' text-[#0D111D] py-1 px-2 rounded-sm outline-none' />
-                    </li>
+                    <li className=' border-2 text-md font-semibold py-[3px] px-3 border-transparent hover:bg-indigo-300 hover:bg-opacity-30 hover:rounded-md text-black'  > <NavLink to='/all-notes' >Notes</NavLink> </li>
+                    <li className=' border-2 text-md font-semibold py-[3px] px-3 border-transparent hover:bg-indigo-300 hover:bg-opacity-30 hover:rounded-md text-black'  > <NavLink to='/notes' >My notes</NavLink> </li>
+                    
                     <li className=' rounded-sm border-zinc-500 '> 
                         <button className='flex gap-2 items-center justify-center '
                             onClick={() => setIsOpen((prev) => !prev)}
                         >
-                            <div className="w-[30px] h-[30px] bg-fuchsia-400 
-                            rounded-md flex justify-center items-center">
+                            <div className="w-[30px] h-[30px] bg-indigo-200 
+                            rounded-full flex justify-center items-center">
                                 {/* <box-icon name='user-circle' color='#0D111D'></box-icon> */}
-                                <box-icon name='user' color='#0D111D'></box-icon>
+                                <box-icon name='user-circle'></box-icon>
                             </div>
                         </button>
                         {
                             isOpen &&
-                            <div className='absolute mt-3 border-fuchsia-500 border-2 bg-zinc-900 py-2 rounded-md w-[90px] cursor-pointer'>
+                            <div className='bg-white absolute mt-3 border border-[#C6C5FF] border-opacity-50  py-2 rounded-md w-[90px] cursor-pointer'>
                                 <div className='flex flex-col justify-center items-center'>
                                     
                                     {
                                         user ? <> 
-                                        <div className='hover:text-fuchsia-100 flex justify-center w-full'>
-                                        <Link to={`/profile/${user._id}`} className='hover:bg-slate-200 hover:bg-opacity-10 rounded-md px-2'>Profile</Link>
+                                        <div className='hover:text-fuchsia-500 flex justify-center w-full'>
+                                        <Link to={`/profile/${user._id}`} className='px-2'>Profile</Link>
                                     </div>
                                         
-                                        <div className='hover:text-fuchsia-100 flex justify-center w-full'>
+                                        <div className='hover:text-fuchsia-500 flex justify-center w-full'>
                                         <Logout/>
                                     </div> </> : <>
                                     <Link to='/signup' >Signup</Link>
@@ -61,7 +61,7 @@ const Header = () => {
                         }
                     </li>
                 </div>
-            </nav>
+            </div>
         </>
     )
 }

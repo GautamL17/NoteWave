@@ -82,12 +82,12 @@ const Profile = () => {
                     </div>
                 ) : (
                     <form noValidate onSubmit={handleSubmit}>
-                        <div className="w-[70%] text-white mx-auto">
-                            <h1 className="text-5xl font-semibold mt-4">
+                        <div className="w-[70%] text-black mx-auto">
+                            <h1 className="text-3xl font-semibold mt-4">
                                 Edit Profile
                             </h1>
-                            <div className=" bg-indigo-300 bg-opacity-10 rounded-lg mt-4">
-                                <h1 className='bg-indigo-300 bg-opacity-30 p-2 rounded-t-md text-xl'>Edit note</h1>
+                            <div className="border border-indigo-300  bg-opacity-10 rounded-lg mt-4">
+                                <h1 className='bg-gradient-to-r from-pink-300 via-fuchsia-300 to-indigo-300 bg-opacity-30 p-2 rounded-t-md text-xl'>Edit note</h1>
                                 <div className="mt-1 px-2">
                                     <h2 className="">
                                         Username
@@ -96,7 +96,7 @@ const Profile = () => {
                                         required
                                         name='userName'
                                         type="text"
-                                        className='text-zinc-900 w-full rounded-sm'
+                                        className='text-zinc-900 w-full rounded-md border px-2 py-1'
                                         placeholder='Jane Doe'
                                         value={formData.userName}
                                         onChange={handleChange}
@@ -111,7 +111,7 @@ const Profile = () => {
                                         required
                                         name='email'
                                         type="text"
-                                        className='text-zinc-900 w-full rounded-sm'
+                                        className='text-zinc-900 w-full border px-2 py-1 rounded-md'
                                         placeholder='Enter the title'
                                         value={formData.email}
                                         onChange={handleChange}

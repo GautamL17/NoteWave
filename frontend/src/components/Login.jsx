@@ -57,13 +57,12 @@ const Login = () => {
     setFormError(validate(formData));
     setIsSubmit(true);
     
-    // Destructure formData
     const { email, password } = formData;
   
     if (Object.keys(validate(formData)).length === 0) {
       try {
         const response = await dispatch(login({ email, password })); // Pass an object with email and password
-        console.log(response);
+        // console.log(response);
         if (response.meta.requestStatus === 'fulfilled') {
           navigate('/notes');
         }
@@ -88,20 +87,20 @@ const Login = () => {
 
   useEffect(() => {
     if (Object.keys(formError).length === 0 && isSubmit) {
-      console.log(formData);
+      // console.log(formData);
     }
   }, [formError]);
 
   return (
-    <div className="w-[30%] h-[50%] mx-auto mt-[5%] rounded-md bg-indigo-100 bg-opacity-5 px-4 py-3 pl-4">
+    <div className="w-[30%] h-[50%] mx-auto mt-[5%] rounded-md border border-indigo-400 px-4 py-3 pl-4">
       <div className="flex justify-center items-center flex-col mx-auto">
-        <h1 className="text-3xl text-white font-semibold mb-3">Login</h1>
-        <p className="text-sm text-white">Long time no see!</p>
+        <h1 className="text-3xl  font-semibold mb-3">Login</h1>
+        <p className="text-sm">Long time no see!</p>
       </div>
 
       <form className="flex flex-wrap flex-col justify-center" noValidate onSubmit={handleSubmit}>
-        <div className="text-white">
-          <label htmlFor="email" className="text-white text-xl">Email</label>
+        <div className="">
+          <label htmlFor="email" className="text-xl">Email</label>
           <input
             type="email"
             name="email"
@@ -113,8 +112,8 @@ const Login = () => {
           />
           <p className="text-red-400 mb-3">{formError.email}</p>
         </div>
-        <div className="text-white">
-          <label htmlFor="password" className="text-white text-xl">Password</label>
+        <div className="">
+          <label htmlFor="password" className=" text-xl">Password</label>
           <input
             type="password"
             name="password"
@@ -128,13 +127,13 @@ const Login = () => {
         </div>
         <button
           type="submit"
-          className="w-full bg-indigo-400 mx-auto flex justify-center items-center px-2 py-1 rounded-md hover:bg-indigo-500"
+          className="w-full bg-fuchsia-400 mx-auto flex justify-center items-center px-2 py-1 rounded-md hover:bg-fuchsia-500"
         >
           Login
         </button>
         {formError.general && <p className="text-red-400 mt-3">{formError.general}</p>}
         <p className="mt-3 text-sm text-gray-400">
-          Do not have an account? <NavLink to="/signup" className="text-green-400">Sign Up</NavLink>
+          Do not have an account? <NavLink to="/signup" className="text-green-500">Sign Up</NavLink>
         </p>
       </form>
     </div>

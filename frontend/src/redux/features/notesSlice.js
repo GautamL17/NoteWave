@@ -4,7 +4,7 @@ import axios from 'axios';
 // Initial state
 const initialState = {
     notes: [],
-    selectedNote: null, // New state to hold the selected note
+    selectedNote: null,
     loading: false,
     error: null,
     searchQuery: '',
@@ -43,10 +43,10 @@ export const createNotes = createAsyncThunk('notes/createNotes', async (formData
                 Authorization: `Bearer ${token}`,
             },
         });
-
         return data;
     } catch (error) {
-        return rejectWithValue(error.response.data || error.message);
+        console.error('Error in createNotes:', error.response?.data || error.message);
+        return rejectWithValue(error.response?.data || error.message);
     }
 });
 
@@ -64,7 +64,7 @@ export const editNotes = createAsyncThunk('notes/editNotes', async ({ id, title,
                 Authorization: `Bearer ${token}`,
             },
         });
-        return data; // Assuming the backend returns the updated note object
+        return data;
     } catch (error) {
         return rejectWithValue(error.response.data || error.message);
     }
@@ -89,6 +89,7 @@ export const deleteNote = createAsyncThunk('notes/deleteNote', async (id, { getS
     }
 });
 
+// Create slice
 const notesSlice = createSlice({
     name: 'notes',
     initialState,
@@ -97,10 +98,10 @@ const notesSlice = createSlice({
             state.notes = action.payload;
         },
         setSelectedNote(state, action) {
-            state.selectedNote = action.payload; // Set the selected note
+            state.selectedNote = action.payload;
         },
         clearSelectedNote(state) {
-            state.selectedNote = null; // Clear the selected note
+            state.selectedNote = null;
         },
         setLoading(state, action) {
             state.loading = action.payload;
@@ -141,12 +142,12 @@ const notesSlice = createSlice({
             })
             .addCase(editNotes.fulfilled, (state, action) => {
                 state.loading = false;
-                const updatedNote = action.payload; // Assuming the backend returns the updated note object
+                const updatedNote = action.payload;
                 const index = state.notes.findIndex(note => note._id === updatedNote._id);
                 if (index !== -1) {
                     state.notes[index] = updatedNote;
                     if (state.selectedNote && state.selectedNote._id === updatedNote._id) {
-                        state.selectedNote = updatedNote; // Update selected note if it matches the edited note
+                        state.selectedNote = updatedNote;
                     }
                 }
             })
@@ -161,7 +162,7 @@ const notesSlice = createSlice({
                 state.loading = false;
                 state.notes = state.notes.filter(note => note._id !== action.payload);
                 if (state.selectedNote && state.selectedNote._id === action.payload) {
-                    state.selectedNote = null; // Clear selected note if deleted
+                    state.selectedNote = null;
                 }
             })
             .addCase(deleteNote.rejected, (state, action) => {
@@ -171,5 +172,6 @@ const notesSlice = createSlice({
     },
 });
 
+// Export actions and reducer
 export const { setNotes, setSelectedNote, clearSelectedNote, setLoading, setError, setSearchQuery } = notesSlice.actions;
 export default notesSlice.reducer;

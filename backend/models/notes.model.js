@@ -10,28 +10,32 @@ const noteSchema = new Schema({
         type: String,
         required: true,
     },
-    category: {
+    categories: [{  
         type: String,
         required: true
-    },
+    }],
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true,
     },
-    images:[{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'Image',
+    images: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Image',
     }],
-    pdfs:[{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'PDF',
+    pdfs: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'PDF',
     }],
-},
-    {
-        timestamps: true,
+    visibility: {
+        type: String,
+        enum: ['public', 'private'],
+        default: 'public',
     }
-)
+},
+{
+    timestamps: true,
+});
 
-const Note = mongoose.model('Note', noteSchema)
-module.exports = Note
+const Note = mongoose.model('Note', noteSchema);
+module.exports = Note;

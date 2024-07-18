@@ -1,4 +1,4 @@
-const PDF = require('../models/pdfs.models');
+const PDF = require('../models/pdfs.model');
 const path = require('path');
 const fs = require('fs');
 const mongoose = require('mongoose')

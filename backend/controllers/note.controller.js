@@ -1,9 +1,11 @@
 const Note = require('../models/notes.model');
-const Image = require('../models/images.model')
-const PDF = require('../models/pdfs.models')
-const fs = require('fs');
-const path = require('path');
+const Image = require('../models/images.model');
+const PDF = require('../models/pdfs.model');
+const mongoose = require('mongoose');
 
+const isValidObjectId = (id) => {
+    return mongoose.Types.ObjectId.isValid(id);
+};
 
 const HandleGetNotes = async (req, res) => {
     try {
@@ -24,34 +26,35 @@ const HandleGetNotes = async (req, res) => {
     }
 };
 
-
 const HandleCreateNotes = async (req, res) => {
     try {
-        const { title, content, category } = req.body;
+        const { title, content, categories, visibility } = req.body;
 
         if (!req.user) {
             return res.status(401).json({ status: 'error', message: 'User not authenticated' });
         }
 
-        if (!title || !content || !category) {
-            return res.status(400).json({ status: 'error', message: 'Please fill all the fields' });
+        if (!title || !content || !categories || !Array.isArray(categories)) {
+            return res.status(400).json({ status: 'error', message: 'Invalid or missing categories field' });
         }
+        const parsedCategories = categories.map(cat => cat.trim()); // Trim whitespace from each category string
 
         const note = new Note({
             user: req.user._id,
             title,
             content,
-            category,
+            categories: parsedCategories,
+            visibility,
         });
 
         // Save the note first to get the note ID
         await note.save();
 
         // Save images
-        if (req.files.images) {
+        if (req.files && req.files.images) {
             const imagePromises = req.files.images.map(async (file) => {
                 const newImage = new Image({
-                    path: '' + file.filename,
+                    path: file.filename,
                     note: note._id,
                 });
                 await newImage.save();
@@ -61,11 +64,11 @@ const HandleCreateNotes = async (req, res) => {
         }
 
         // Save PDFs
-        if (req.files.pdfs) {
+        if (req.files && req.files.pdfs) {
             const pdfPromises = req.files.pdfs.map(async (file) => {
                 const newPDF = new PDF({
-                    path: '' + file.filename,
-                    note: note._id, // Ensure note._id is used here
+                    path: file.filename,
+                    note: note._id,
                 });
                 await newPDF.save();
                 return newPDF._id;
@@ -78,15 +81,19 @@ const HandleCreateNotes = async (req, res) => {
 
         res.status(201).json(note);
     } catch (error) {
-        console.log(error);
+        console.error('Error in HandleCreateNotes:', error);
         res.status(500).json({ status: 'error', message: 'Error in HandleCreateNotes', body: req.body });
     }
 };
 
-
 const HandleGetNotesById = async (req, res) => {
     try {
-        const note = await Note.findById(req.params.id);
+        const noteId = req.params.id;
+        if (!isValidObjectId(noteId)) {
+            return res.status(400).json({ message: 'Invalid note ID', noteId });
+        }
+
+        const note = await Note.findById(noteId);
         if (note) {
             res.json(note);
         } else {
@@ -95,35 +102,37 @@ const HandleGetNotesById = async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            message: 'internal server error'
+            message: 'Internal server error'
         });
     }
 };
 
 const HandleUpdateNotesById = async (req, res) => {
     try {
-        const { title, content, category } = req.body; // Include content field
-        const note = await Note.findById(req.params.id);
-        console.log('note:', note);
+        const noteId = req.params.id;
+        if (!isValidObjectId(noteId)) {
+            return res.status(400).json({ message: 'Invalid note ID' });
+        }
+
+        const { title, content, categories, visibility } = req.body;
+        const note = await Note.findById(noteId);
         if (!note) return res.status(404).json({ message: 'Note not found' });
         if (note.user.toString() !== req.user._id.toString()) {
             return res.status(400).json({
                 message: 'You are not authorized'
             });
         }
-        if (note) {
-            note.title = title;
-            note.content = content; // Update content field
-            note.category = category;
 
-            const updatedNote = await note.save();
-            res.status(200).json({
-                message: 'Note updated',
-                updatedNote
-            });
-        } else {
-            res.status(400).json({ message: 'Note not found' });
-        }
+        note.title = title;
+        note.content = content;
+        note.categories = Array.isArray(categories) ? categories.map(cat => cat.trim()) : [];
+        note.visibility = visibility;
+
+        const updatedNote = await note.save();
+        res.status(200).json({
+            message: 'Note updated',
+            updatedNote
+        });
     } catch (error) {
         console.log(error);
         res.status(500).json({
@@ -133,9 +142,14 @@ const HandleUpdateNotesById = async (req, res) => {
     }
 };
 
-const handleDeleteNoteById = async (req, res) => {
+const HandleDeleteNoteById = async (req, res) => {
     try {
-        const note = await Note.findById(req.params.id);
+        const noteId = req.params.id;
+        if (!isValidObjectId(noteId)) {
+            return res.status(400).json({ message: 'Invalid note ID' });
+        }
+
+        const note = await Note.findById(noteId);
         if (!note || (note.user.toString() !== req.user._id.toString())) {
             return res.status(404).json({
                 status: 'error occurred',
@@ -143,7 +157,7 @@ const handleDeleteNoteById = async (req, res) => {
             });
         }
 
-        const deleteNote = await Note.findByIdAndDelete(req.params.id);
+        await Note.findByIdAndDelete(noteId);
         res.status(200).json({
             message: 'Note deleted',
             note
@@ -157,10 +171,27 @@ const handleDeleteNoteById = async (req, res) => {
     }
 };
 
+
+const HandleAllNotes = async(req,res) => {
+    try{
+
+        const allNotes = await Note.find({visibility:'public'})
+        res.status(200).json({allNotes})
+    }
+    catch(error){
+        console.log(error);
+        res.status(500).json({
+            status: 'error occurred',
+            message: 'Server error'
+        });
+    }
+}
+
 module.exports = {
     HandleGetNotes,
     HandleCreateNotes,
     HandleGetNotesById,
     HandleUpdateNotesById,
-    handleDeleteNoteById,
+    HandleDeleteNoteById,
+    HandleAllNotes
 };

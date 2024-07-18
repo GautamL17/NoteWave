@@ -23,7 +23,13 @@ const userSchema = new Schema({
     photo: {
         type: String,
         default: 'https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg',
-    }
+    },
+    friends: [
+        { type: Schema.Types.ObjectId, ref: 'User' }
+    ],
+    friendRequests: [
+        { type: Schema.Types.ObjectId, ref: 'User' }
+    ]
 }, { timestamps: true });
 
 userSchema.pre('save', async function (next) {

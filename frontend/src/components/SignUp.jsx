@@ -77,45 +77,45 @@ const Register = () => {
 
     return (
         <>
-            <div className="w-[30%] h-[50%] mx-auto mt-[5%] rounded-md bg-indigo-100 bg-opacity-5 px-4 py-3 pl-4">
+            <div className="w-[30%] h-[50%] mx-auto mt-[5%] rounded-md border border-indigo-400 px-4 py-3 pl-4">
                 <div className=" flex justify-center items-center flex-col mx-auto">
-                    <h1 className='text-3xl text-gray-100 font-semibold mb-3'>Create an account</h1>
-                    <p className='text-sm text-gray-100'>Join for exclusive access!</p>
+                    <h1 className='text-3xl  font-semibold mb-3'>Create an account</h1>
+                    <p className='text-sm'>Join for exclusive access!</p>
                 </div>
                 {userFound && <p className="text-red-500">User already exists. Please check your credentials.</p>}
                 <form className='flex flex-wrap flex-col justify-center' noValidate onSubmit={handleSubmit} action="#">
-                    <div className=" text-white">
+                    <div className="">
                         <label htmlFor="name" className='text-xl'>Name</label>
                         <input type="text"
                             name='name'
                             placeholder='John Doe'
-                            className='block bg-zinc-100 rounded-sm outline-none text-zinc-900 w-full mb-3 h-[35px] pl-2  invalid:border-red-500'
+                            className='block bg-zinc-100 rounded-md outline-none text-zinc-900 w-full mb-3 h-[35px] pl-2  invalid:border-red-500'
                             required={true}
                             value={formData.name}
                             onChange={handleChange}
                         />
-                        <p className="text-red-400 mb-3 " > {formError.name} </p>
+                        <p className="text-red-400 mb-3"> {formError.name} </p>
                     </div>
-                    <div className=" text-white">
-                        <label htmlFor="email" className='text-white text-xl '>Email</label>
+                    <div className="">
+                        <label htmlFor="email" className=' text-xl '>Email</label>
                         <input
                             type="email"
                             name='email'
                             placeholder='example@gmail.com'
-                            className='block bg-zinc-100 rounded-sm outline-none text-zinc-900 w-full mb-3 h-[35px] pl-2'
+                            className='block bg-zinc-100 rounded-md outline-none text-zinc-900 w-full mb-3 h-[35px] pl-2'
                             required={true}
                             value={formData.email}
                             onChange={handleChange}
                         />
                         <p className="text-red-400 mb-3 " > {formError.email} </p>
                     </div>
-                    <div className=" text-white">
-                        <label htmlFor="password" className='text-white text-xl '>Password</label>
+                    <div className=" text-black">
+                        <label htmlFor="password" className='text-xl '>Password</label>
                         <input
                             type="password"
                             name='password'
                             placeholder='••••••••'
-                            className='block bg-zinc-100 outline-none rounded-sm text-zinc-900 w-full mb-3 h-[35px] pl-2'
+                            className='block bg-zinc-100 outline-none rounded-md text-zinc-900 w-full mb-3 h-[35px] pl-2'
                             required={true}
                             value={formData.password}
                             onChange={handleChange}
@@ -123,10 +123,10 @@ const Register = () => {
                         <p className="text-red-400 mb-3 " > {formError.password} </p>
                     </div>
                     <button type="submit"
-                        className="w-full bg-indigo-400 mx-auto flex justify-center items-center px-2 py-1 rounded-md hover:bg-indigo-500" >
+                        className="w-full bg-fuchsia-400 mx-auto flex justify-center items-center px-2 py-1 rounded-md hover:bg-fuchsia-500" >
                         Create an account
                     </button>
-                    <p className="mt-3 text-sm text-gray-400">Already have an account?  <NavLink to="/Login" className="text-green-400">Login</NavLink></p>
+                    <p className="mt-3 text-sm text-gray-400">Already have an account?  <NavLink to="/Login" className="text-green-500">Login</NavLink></p>
 
                 </form>
             </div>
