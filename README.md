@@ -41,19 +41,21 @@ The server-side application is served on `localhost:3000`.
 
 ### /api/notes/
 
-1. **GET `/api/notes/`**
-   - Fetch all notes.
+1. **GET `/api/all-notes/`**
+   - Fetch all the notes created by all users.
+2. **GET `/api/notes/`**
+   - Fetch all of notes created by the user.
 
-2. **POST `/api/notes/create`**
+3. **POST `/api/notes/create`**
    - Create a new note.
 
-3. **GET `/api/notes/:id`**
+4. **GET `/api/notes/:id`**
    - Fetch a specific note by ID.
 
-4. **PUT `/api/notes/:id`**
+5. **PUT `/api/notes/:id`**
    - Update a specific note by ID.
 
-5. **DELETE `/api/notes/:id`**
+6. **DELETE `/api/notes/:id`**
    - Delete a specific note by ID.
 
 ## Getting Started
