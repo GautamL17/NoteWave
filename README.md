@@ -140,4 +140,4 @@ User authentication is implemented in the backend using JWT (JSON Web Tokens) an
 
 This project is licensed under the MIT License.
 ##
-Enjoy using NoteWave! For any queries or contributions, feel free to me.
+Enjoy using NoteWave! For any queries or contributions, feel free to reach out to me.
